@@ -3,7 +3,6 @@ let numCols = 20;
 let gridSize = 50;
 let canvasWidth = numCols * gridSize;
 let canvasHeight = numRows * gridSize;
-let gameboardStart = gridSize;
 let strokeWeightVal = gridSize/10;
 
 let gameObjects = [];
@@ -15,9 +14,13 @@ let selectedObj = null;
 let drawUserGuidedSegment = false;
 let ignoreRelease = false;
 let submitButton = null;
-let textPrompt1 = "Locate and select the 2nd virtual image's appearance on the mirror."
-let textPrompt2 = "Nice work! Now select the segment that represents the perceived distance of the 2nd virtual image."
-let textPrompts = [textPrompt1, textPrompt2];
+let textPrompt1 = "Locate and select the 1st virtual image's appearance on the mirror."
+let textPrompt2 = "Nice work! Now select the segment that represents the perceived distance of the 1st virtual image."
+let textPrompt3 = "Excellent! Locate and select the 2nd virtual image's appearance on the mirror."
+let textPrompt4 = "Nice work! Now select the segment that represents the perceived distance of the 2nd virtual image."
+let tryAgainPrompt = "Try again";
+let noSelectionPrompt = "Please make a selection";
+let textPrompts = [textPrompt1, textPrompt2, textPrompt3, textPrompt4];
 let answers = [];
 let trialIdx = 0;
 
@@ -72,6 +75,7 @@ function setup() {
   lineToMirror.visible = true;
   intersection.visible = true;
   virtualMirror.visible = true;
+  rightAngleSymbol.visible = true;
   reflectionSegment.autoReveal = false;
   reflectionSegment2.autoReveal = false;
 
@@ -81,7 +85,7 @@ function setup() {
                       observer, originalItem, virtualItem, virtualItem2,                   
                       intersection,  intersection2, intersection3, intersection4,
                       ];
-  answers = [intersection4, reflectionSegment2];
+  answers = [intersection3, reflectionSegment, intersection4, reflectionSegment2];
                     
 }
 
@@ -90,6 +94,7 @@ function draw() {
   background(this.backgroundColor)
   textAlign(CENTER, CENTER);
   textSize(16);
+  stroke(color(0,0,0));
   text(trialIdx >= textPrompts.length ? "Great work! That's all for now, folks." : textPrompts[trialIdx], canvasWidth/2, canvasHeight - 50);
 
   for (var i = 0; i < this.gameObjects.length; i++) {
@@ -114,19 +119,14 @@ function mousePressed() {
 }
 
 function mouseDragged() {
-  print("drag")
   if (!this.selectedObj) {
-    print("no selected obj")
     return;
-  } else {
-    print("selected obj exists")
-  }
+  } 
 
   let obj = this.getCollision(mouseX, mouseY);
 
   if (!obj) {
     if (!this.selectedEnd) {
-      // draw line from selected obj to mouse loc
       this.drawUserGuidedSegment = true;
     } 
     return;
@@ -145,15 +145,7 @@ function mouseDragged() {
 
 
 function mouseReleased() {
-  print("MOUSE RELEASE")
-  if (selectedObj == null) {
-    print("NULL ON RELEASE")
-  } else {
-    print("selected object not null")
-  }
-
   if (ignoreRelease) {
-    print("ignore press")
     return;
   }
   
@@ -196,7 +188,6 @@ function drawGrid() {
 }
 
 function drawLiveSegment() {
-  // Set the pivot point
   let pivotX = this.selectedStart.x1 * gridSize;
   let pivotY = this.selectedStart.y1 * gridSize;
   
